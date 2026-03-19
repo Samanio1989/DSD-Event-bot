@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LINE Event Bot - GitHub Pages</title>
+  <meta name="theme-color" content="#06C755" />
+  <style>
+    :root{
+      --green:#06C755;
+      --green-dark:#05a648;
+      --bg:#f4f7fb;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --danger:#dc2626;
+      --warning:#f59e0b;
+      --shadow:0 10px 24px rgba(0,0,0,.08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Thai",sans-serif;background:var(--bg);color:var(--text)}
+    a{color:inherit}
+    .wrap{max-width:1100px;margin:0 auto;padding:20px}
+    .hero{
+      background:linear-gradient(135deg,var(--green),#1fd874);
+      color:#fff;
+      border-radius:24px;
+      padding:24px;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+    }
+    .hero h1{margin:0 0 8px;font-size:28px;line-height:1.2}
+    .hero p{margin:0;opacity:.95}
+    .grid{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:18px;
+    }
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:18px;
+    }
+    .card h2{
+      margin:0 0 14px;
+      font-size:20px;
+    }
+    .muted{color:var(--muted)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+    label{
+      display:block;
+      font-size:14px;
+      font-weight:700;
+      margin:0 0 6px;
+    }
+    input, textarea, select, button{
+      width:100%;
+      font:inherit;
+    }
+    input, textarea, select{
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:11px 12px;
+      outline:none;
+      background:#fff;
+    }
+    input:focus, textarea:focus, select:focus{
+      border-color:var(--green);
+      box-shadow:0 0 0 3px rgba(6,199,85,.12);
+    }
+    textarea{min-height:90px;resize:vertical}
+    .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+    button{
+      border:0;
+      border-radius:12px;
+      padding:11px 14px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+    button:hover{transform:translateY(-1px)}
+    .btn-primary{background:var(--green);color:#fff}
+    .btn-primary:hover{background:var(--green-dark)}
+    .btn-secondary{background:#eef2f7;color:#111827}
+    .btn-danger{background:var(--danger);color:#fff}
+    .btn-outline{background:#fff;border:1px solid var(--line)}
+    .status{
+      border-radius:14px;
+      padding:12px 14px;
+      margin-top:12px;
+      display:none;
+      white-space:pre-wrap;
+      line-height:1.5;
+    }
+    .status.ok{display:block;background:#ecfdf3;color:#065f46;border:1px solid #a7f3d0}
+    .status.err{display:block;background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+    .section-actions{
+      display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:#f0fdf4;
+      color:#166534;
+      font-size:13px;
+      font-weight:700;
+    }
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .item{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+      background:#fff;
+    }
+    .item-head{
+      display:flex;
+      gap:10px;
+      justify-content:space-between;
+      align-items:flex-start;
+      margin-bottom:8px;
+    }
+    .item-title{
+      font-size:17px;
+      font-weight:800;
+      margin:0;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      white-space:nowrap;
+      background:#eff6ff;
+      color:#1d4ed8;
+      border-radius:999px;
+      padding:5px 10px;
+      font-size:12px;
+      font-weight:700;
+    }
+    .meta{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:8px 14px;
+      font-size:14px;
+      color:#374151;
+      margin-top:8px;
+    }
+    .meta div span{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:2px;
+    }
+    .toolbar{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+    .toolbar button{width:auto}
+    .small{font-size:13px}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+    .split{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+      margin-top:18px;
+    }
+    .empty{
+      padding:20px;
+      text-align:center;
+      color:var(--muted);
+      border:1px dashed var(--line);
+      border-radius:14px;
+      background:#fff;
+    }
+    .loading{
+      opacity:.6;
+      pointer-events:none;
+    }
+    .top-note{
+      margin-top:10px;
+      font-size:13px;
+      color:#eefcf3;
+    }
+    .schedule-group{
+      border:1px solid var(--line);
+      border-radius:16px;
+      overflow:hidden;
+      background:#fff;
+      margin-bottom:12px;
+    }
+    .schedule-date{
+      background:#f0fdf4;
+      color:#166534;
+      padding:11px 14px;
+      font-weight:800;
+      border-bottom:1px solid #dcfce7;
+    }
+    .schedule-row{
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+    }
+    .schedule-row:last-child{border-bottom:0}
+    .schedule-time{
+      font-weight:800;
+      color:#111827;
+      margin-bottom:4px;
+    }
+    .schedule-title{
+      font-weight:700;
+      margin-bottom:4px;
+    }
+    .schedule-sub{
+      color:var(--muted);
+      font-size:14px;
+    }
+    .footer-note{
+      text-align:center;
+      color:var(--muted);
+      font-size:13px;
+      margin:18px 0 6px;
+    }
+
+    @media (max-width: 920px){
+      .grid,.split,.row,.row-3{grid-template-columns:1fr}
+      .wrap{padding:14px}
+      .hero h1{font-size:24px}
+      .meta{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>LINE Event Bot</h1>
+      <p>หน้าเว็บสำหรับ GitHub Pages เชื่อม Google Apps Script โดยตรง</p>
+      <div class="top-note">
+        แก้ค่า <span class="mono">API_URL</span> ในโค้ดนี้ให้เป็น Web App URL ของ Apps Script ก่อนใช้งาน
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2 id="formTitle">สร้างกิจกรรม</h2>
+
+        <div class="row">
+          <div>
+            <label for="title">ชื่อกิจกรรม</label>
+            <input id="title" type="text" placeholder="เช่น ประชุมวางแผนกิจกรรม" />
+          </div>
+          <div>
+            <label for="location">สถานที่</label>
+            <input id="location" type="text" placeholder="เช่น ห้องประชุมใหญ่ / อาคาร 100 ปี" />
+          </div>
+        </div>
+
+        <div class="row-3" style="margin-top:10px">
+          <div>
+            <label for="date">วันที่</label>
+            <input id="date" type="date" />
+          </div>
+          <div>
+            <label for="startTime">เวลาเริ่ม</label>
+            <input id="startTime" type="time" />
+          </div>
+          <div>
+            <label for="endTime">เวลาจบ</label>
+            <input id="endTime" type="time" />
+          </div>
+        </div>
+
+        <div style="margin-top:10px">
+          <label for="stakeholders">ผู้เกี่ยวข้อง</label>
+          <input id="stakeholders" type="text" placeholder="คั่นด้วย , เช่น นายเอ, นางบี" />
+        </div>
+
+        <div style="margin-top:10px">
+          <label for="stakeholderEmails">อีเมลผู้เกี่ยวข้อง</label>
+          <input id="stakeholderEmails" type="text" placeholder="คั่นด้วย , เช่น a@email.com, b@email.com" />
+        </div>
+
+        <div style="margin-top:10px">
+          <label for="detail">รายละเอียด</label>
+          <textarea id="detail" placeholder="รายละเอียดเพิ่มเติมของกิจกรรม"></textarea>
+        </div>
+
+        <input id="friendlyId" type="hidden" />
+
+        <div class="btns">
+          <button class="btn-primary" id="btnSave" onclick="saveEvent()">💾 บันทึกกิจกรรม</button>
+          <button class="btn-secondary" id="btnClear" onclick="clearForm()">🧹 ล้างฟอร์ม</button>
+          <button class="btn-outline" id="btnToday" onclick="fillTodayDefault()">📅 วันนี้ 09:00-10:00</button>
+        </div>
+
+        <div id="formStatus" class="status"></div>
+      </div>
+
+      <div class="card">
+        <h2>สรุปและค้นหา</h2>
+
+        <div class="section-actions">
+          <span class="pill">Web App API</span>
+          <span class="pill">GitHub Pages Ready</span>
+        </div>
+
+        <div class="toolbar">
+          <button class="btn-primary" onclick="loadTodaySummary()">📅 ดูสรุปวันนี้</button>
+          <button class="btn-secondary" onclick="loadRecent()">📌 รายการล่าสุด</button>
+        </div>
+
+        <div class="toolbar">
+          <button class="btn-outline" onclick="loadSchedule('today')">🧾 ตารางงานวันนี้</button>
+          <button class="btn-outline" onclick="loadSchedule('tomorrow')">🗓 ตารางงานพรุ่งนี้</button>
+          <button class="btn-outline" onclick="loadSchedule('week')">📋 ตารางงานสัปดาห์นี้</button>
+          <button class="btn-outline" onclick="loadSchedule('month')">🗂 ตารางงานเดือนนี้</button>
+        </div>
+
+        <div class="row" style="margin-top:8px">
+          <div>
+            <label for="searchFriendlyId">ค้นหาด้วยรหัสกิจกรรม</label>
+            <input id="searchFriendlyId" type="text" placeholder="เช่น EVT-20260319-001" />
+          </div>
+          <div style="display:flex;align-items:end">
+            <button class="btn-primary" onclick="searchByFriendlyId()">🔎 ค้นหา</button>
+          </div>
+        </div>
+
+        <div id="summaryBox" class="status" style="display:block;background:#f9fafb;border:1px solid var(--line);color:#111827">
+          พร้อมใช้งาน
+        </div>
+      </div>
+    </div>
+
+    <div class="split">
+      <div class="card">
+        <h2>รายการล่าสุด</h2>
+        <div id="recentList" class="list">
+          <div class="empty">ยังไม่ได้โหลดข้อมูล</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>ตารางงาน</h2>
+        <div id="scheduleBox">
+          <div class="empty">เลือกช่วงเวลาเพื่อแสดงตารางงาน</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      หน้าเว็บนี้ใช้ร่วมกับ <span class="mono">Code.gs</span> เวอร์ชันล่าสุดที่มี action endpoint แล้ว
+    </div>
+  </div>
+
+  <script>
+    /**************************************************************
+     * CONFIG
+     **************************************************************/
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwnkG8DI9-bxUULlNRifagX3cld2YIQBFSQqUMv1YGWDWLF-hD5IzsnvFaNZrlUt4MDog/exec';
+    const WEB_USER_ID = 'GITHUB_WEB';
+
+    /**************************************************************
+     * HELPERS
+     **************************************************************/
+    const $ = (id) => document.getElementById(id);
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, s => ({
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        '"':'&quot;',
+        "'":'&#39;'
+      }[s]));
+    }
+
+    function setLoading(on) {
+      document.body.classList.toggle('loading', !!on);
+      $('btnSave').disabled = !!on;
+      $('btnClear').disabled = !!on;
+      $('btnToday').disabled = !!on;
+    }
+
+    function showStatus(elId, ok, text) {
+      const el = $(elId);
+      el.className = 'status ' + (ok ? 'ok' : 'err');
+      el.textContent = text || '';
+      el.style.display = 'block';
+    }
+
+    function showInfo(text) {
+      const el = $('summaryBox');
+      el.className = 'status';
+      el.style.display = 'block';
+      el.style.background = '#f9fafb';
+      el.style.border = '1px solid #e5e7eb';
+      el.style.color = '#111827';
+      el.textContent = text || '';
+    }
+
+    function clearStatus(elId) {
+      const el = $(elId);
+      el.className = 'status';
+      el.style.display = 'none';
+      el.textContent = '';
+    }
+
+    function formatDateTimeLocal(iso) {
+      if (!iso) return '-';
+      const d = new Date(iso);
+      if (isNaN(d)) return iso;
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    function toInputDate(iso) {
+      if (!iso) return '';
+      const d = new Date(iso);
+      if (isNaN(d)) return '';
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    }
+
+    function toInputTime(iso) {
+      if (!iso) return '';
+      const d = new Date(iso);
+      if (isNaN(d)) return '';
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    function parseQuery() {
+      const params = new URLSearchParams(location.search);
+      return {
+        id: (params.get('id') || '').trim(),
+        mode: (params.get('mode') || '').trim()
+      };
+    }
+
+    /**************************************************************
+     * API
+     **************************************************************/
+    async function apiGet(action, extra = {}) {
+      const url = new URL(API_URL);
+      url.searchParams.set('action', action);
+      Object.keys(extra).forEach(k => {
+        if (extra[k] !== undefined && extra[k] !== null) {
+          url.searchParams.set(k, extra[k]);
+        }
+      });
+
+      const res = await fetch(url.toString(), { method: 'GET' });
+      const text = await res.text();
+
+      try {
+        return JSON.parse(text);
+      } catch (err) {
+        throw new Error('API ตอบกลับไม่ใช่ JSON: ' + text);
+      }
+    }
+
+    async function apiPost(action, payload = {}) {
+      const form = new URLSearchParams();
+      form.set('action', action);
+      form.set('payload', JSON.stringify(payload));
+
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+        body: form.toString()
+      });
+
+      const text = await res.text();
+
+      try {
+        return JSON.parse(text);
+      } catch (err) {
+        throw new Error('API ตอบกลับไม่ใช่ JSON: ' + text);
+      }
+    }
+
+    /**************************************************************
+     * FORM
+     **************************************************************/
+    function getFormPayload() {
+      return {
+        friendlyId: $('friendlyId').value.trim(),
+        title: $('title').value.trim(),
+        date: $('date').value.trim(),
+        startTime: $('startTime').value.trim(),
+        endTime: $('endTime').value.trim(),
+        location: $('location').value.trim(),
+        detail: $('detail').value.trim(),
+        stakeholders: $('stakeholders').value.trim(),
+        stakeholderEmails: $('stakeholderEmails').value.trim(),
+        userId: WEB_USER_ID
+      };
+    }
+
+    function validatePayload(p) {
+      if (!p.title) throw new Error('กรุณากรอกชื่อกิจกรรม');
+      if (!p.date) throw new Error('กรุณาเลือกวันที่');
+      if (!p.startTime) throw new Error('กรุณาเลือกเวลาเริ่ม');
+      if (!p.endTime) throw new Error('กรุณาเลือกเวลาจบ');
+      if (!p.location) throw new Error('กรุณากรอกสถานที่');
+    }
+
+    async function saveEvent() {
+      clearStatus('formStatus');
+      setLoading(true);
+
+      try {
+        const payload = getFormPayload();
+        validatePayload(payload);
+
+        let result;
+        if (payload.friendlyId) {
+          result = await apiPost('updateEvent', payload);
+        } else {
+          result = await apiPost('createEvent', payload);
+        }
+
+        if (!result.ok) {
+          throw new Error(result.message || 'บันทึกไม่สำเร็จ');
+        }
+
+        const friendlyId = result.friendlyId || (result.row && result.row.friendlyId) || payload.friendlyId || '';
+        if (friendlyId) $('friendlyId').value = friendlyId;
+
+        showStatus(
+          'formStatus',
+          true,
+          (result.message || 'บันทึกสำเร็จ') + (friendlyId ? '\nรหัสกิจกรรม: ' + friendlyId : '')
+        );
+
+        $('formTitle').textContent = payload.friendlyId ? 'แก้ไขกิจกรรม' : 'สร้างกิจกรรม';
+        await Promise.all([loadRecent(), loadTodaySummary()]);
+      } catch (err) {
+        showStatus('formStatus', false, err.message || String(err));
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function clearForm() {
+      $('friendlyId').value = '';
+      $('title').value = '';
+      $('date').value = '';
+      $('startTime').value = '';
+      $('endTime').value = '';
+      $('location').value = '';
+      $('detail').value = '';
+      $('stakeholders').value = '';
+      $('stakeholderEmails').value = '';
+      $('formTitle').textContent = 'สร้างกิจกรรม';
+      clearStatus('formStatus');
+      const url = new URL(location.href);
+      url.searchParams.delete('id');
+      url.searchParams.delete('mode');
+      history.replaceState({}, '', url.toString());
+    }
+
+    function fillTodayDefault() {
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      $('date').value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+      $('startTime').value = '09:00';
+      $('endTime').value = '10:00';
+    }
+
+    async function loadEventToForm(friendlyId) {
+      if (!friendlyId) return;
+      setLoading(true);
+      try {
+        const result = await apiGet('getEventByFriendlyId', { id: friendlyId });
+        if (!result.ok || !result.row) {
+          throw new Error(result.message || 'ไม่พบข้อมูลกิจกรรม');
+        }
+
+        const r = result.row;
+        $('friendlyId').value = r.friendlyId || '';
+        $('title').value = r.title || '';
+        $('date').value = toInputDate(r.start);
+        $('startTime').value = toInputTime(r.start);
+        $('endTime').value = toInputTime(r.end);
+        $('location').value = r.location || '';
+        $('detail').value = r.detail || '';
+        $('stakeholders').value = r.stakeholders || '';
+        $('stakeholderEmails').value = r.stakeholderEmails || '';
+        $('formTitle').textContent = 'แก้ไขกิจกรรม';
+        showStatus('formStatus', true, 'โหลดข้อมูลกิจกรรมเรียบร้อยแล้ว\nรหัสกิจกรรม: ' + r.friendlyId);
+      } catch (err) {
+        showStatus('formStatus', false, err.message || String(err));
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    /**************************************************************
+     * RECENT
+     **************************************************************/
+    async function loadRecent() {
+      const box = $('recentList');
+      box.innerHTML = '<div class="empty">กำลังโหลด...</div>';
+
+      try {
+        const result = await apiGet('getRecentEvents');
+        const rows = result.rows || [];
+
+        if (!rows.length) {
+          box.innerHTML = '<div class="empty">ยังไม่มีกิจกรรม</div>';
+          return;
+        }
+
+        box.innerHTML = rows.map(r => `
+          <div class="item">
+            <div class="item-head">
+              <div>
+                <div class="item-title">${escapeHtml(r.title || '-')}</div>
+                <div class="small muted">รหัส: <span class="mono">${escapeHtml(r.friendlyId || '-')}</span></div>
+              </div>
+              <div class="badge">${escapeHtml(r.status || 'ACTIVE')}</div>
+            </div>
+
+            <div class="meta">
+              <div><span>เริ่ม</span>${escapeHtml(formatDateTimeLocal(r.start))}</div>
+              <div><span>จบ</span>${escapeHtml(formatDateTimeLocal(r.end))}</div>
+              <div><span>สถานที่</span>${escapeHtml(r.location || '-')}</div>
+              <div><span>ผู้เกี่ยวข้อง</span>${escapeHtml(r.stakeholders || '-')}</div>
+            </div>
+
+            <div class="btns" style="margin-top:12px">
+              <button class="btn-primary" onclick="editFromList('${escapeHtml(r.friendlyId || '')}')">✏️ แก้ไข</button>
+              <button class="btn-danger" onclick="deleteEventById('${escapeHtml(r.friendlyId || '')}')">🗑 ลบ</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        box.innerHTML = `<div class="empty">โหลดรายการล่าสุดไม่สำเร็จ<br>${escapeHtml(err.message || String(err))}</div>`;
+      }
+    }
+
+    async function editFromList(friendlyId) {
+      const url = new URL(location.href);
+      url.searchParams.set('mode', 'edit');
+      url.searchParams.set('id', friendlyId);
+      history.replaceState({}, '', url.toString());
+      await loadEventToForm(friendlyId);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function deleteEventById(friendlyId) {
+      if (!friendlyId) return;
+      const ok = confirm('ยืนยันการลบกิจกรรม ' + friendlyId + ' ?');
+      if (!ok) return;
+
+      setLoading(true);
+      try {
+        const result = await apiPost('deleteEvent', {
+          friendlyId,
+          userId: WEB_USER_ID
+        });
+
+        if (!result.ok) {
+          throw new Error(result.message || 'ลบไม่สำเร็จ');
+        }
+
+        showStatus('formStatus', true, result.message || 'ลบสำเร็จ');
+        if ($('friendlyId').value === friendlyId) clearForm();
+        await Promise.all([loadRecent(), loadTodaySummary(), loadSchedule('today', false)]);
+      } catch (err) {
+        showStatus('formStatus', false, err.message || String(err));
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    /**************************************************************
+     * SUMMARY / SEARCH / SCHEDULE
+     **************************************************************/
+    async function loadTodaySummary() {
+      showInfo('กำลังโหลดสรุปวันนี้...');
+      try {
+        const result = await apiGet('getTodaySummary');
+        showInfo(result.text || 'ไม่พบข้อมูล');
+      } catch (err) {
+        showInfo('โหลดสรุปวันนี้ไม่สำเร็จ\n' + (err.message || String(err)));
+      }
+    }
+
+    async function searchByFriendlyId() {
+      const id = $('searchFriendlyId').value.trim();
+      if (!id) {
+        showInfo('กรุณากรอกรหัสกิจกรรม');
+        return;
+      }
+      await loadEventToForm(id);
+    }
+
+    async function loadSchedule(period, notify = true) {
+      const map = {
+        today: 'getScheduleToday',
+        tomorrow: 'getScheduleTomorrow',
+        week: 'getScheduleWeek',
+        month: 'getScheduleMonth'
+      };
+      const action = map[period] || 'getScheduleToday';
+      const box = $('scheduleBox');
+      box.innerHTML = '<div class="empty">กำลังโหลดตารางงาน...</div>';
+      if (notify) showInfo('กำลังโหลดตารางงาน...');
+
+      try {
+        const result = await apiGet(action);
+        const data = result.data || {};
+        const items = data.items || [];
+
+        if (notify) showInfo(data.title || 'ตารางงาน');
+
+        if (!items.length) {
+          box.innerHTML = `<div class="empty">${escapeHtml(data.title || 'ตารางงาน')}<br>ไม่มีกิจกรรม</div>`;
+          return;
+        }
+
+        const groups = {};
+        items.forEach(it => {
+          const key = it.dateLabel || '-';
+          if (!groups[key]) groups[key] = [];
+          groups[key].push(it);
+        });
+
+        box.innerHTML = Object.keys(groups).map(dateLabel => `
+          <div class="schedule-group">
+            <div class="schedule-date">${escapeHtml(dateLabel)}</div>
+            ${groups[dateLabel].map(it => `
+              <div class="schedule-row">
+                <div class="schedule-time">${escapeHtml(it.startTime || '--:--')} - ${escapeHtml(it.endTime || '--:--')}</div>
+                <div class="schedule-title">${escapeHtml(it.title || '-')}</div>
+                <div class="schedule-sub">📍 ${escapeHtml(it.location || '-')}</div>
+                <div class="schedule-sub">🗂 ${escapeHtml(it.calendarId || '-')}</div>
+              </div>
+            `).join('')}
+          </div>
+        `).join('');
+      } catch (err) {
+        box.innerHTML = `<div class="empty">โหลดตารางงานไม่สำเร็จ<br>${escapeHtml(err.message || String(err))}</div>`;
+        if (notify) showInfo('โหลดตารางงานไม่สำเร็จ\n' + (err.message || String(err)));
+      }
+    }
+
+    /**************************************************************
+     * INIT
+     **************************************************************/
+    async function bootstrap() {
+      if (!API_URL || API_URL === 'YOUR_GAS_WEB_APP_URL_HERE') {
+        showInfo('กรุณาแก้ค่า API_URL ในไฟล์ index.html ก่อนใช้งาน');
+        return;
+      }
+
+      const q = parseQuery();
+
+      await Promise.all([
+        loadRecent(),
+        loadTodaySummary()
+      ]);
+
+      if (q.mode === 'edit' && q.id) {
+        await loadEventToForm(q.id);
+      } else {
+        fillTodayDefault();
+      }
+    }
+
+    bootstrap();
+  </script>
+</body>
+</html>
